@@ -21,6 +21,8 @@
 		29A71C151644834B005286F1 /* THContactPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 29A71C141644834B005286F1 /* THContactPickerView.m */; };
 		29A71C1816448473005286F1 /* THContactBubble.m in Sources */ = {isa = PBXBuildFile; fileRef = 29A71C1716448473005286F1 /* THContactBubble.m */; };
 		6AE31FCC1644DB2C00505230 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE31FCB1644DB2C00505230 /* QuartzCore.framework */; };
+		842D7BBF18AF61130002B4CF /* THMailContactPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 842D7BBE18AF61130002B4CF /* THMailContactPickerView.m */; };
+		842D7BC218AF671E0002B4CF /* THMailContactBubble.m in Sources */ = {isa = PBXBuildFile; fileRef = 842D7BC118AF671E0002B4CF /* THMailContactBubble.m */; };
 		84F796481670C79500A8965D /* THBubbleColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 84F796471670C79500A8965D /* THBubbleColor.m */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +48,10 @@
 		29A71C1616448473005286F1 /* THContactBubble.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THContactBubble.h; sourceTree = "<group>"; };
 		29A71C1716448473005286F1 /* THContactBubble.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THContactBubble.m; sourceTree = "<group>"; };
 		6AE31FCB1644DB2C00505230 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		842D7BBD18AF61130002B4CF /* THMailContactPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THMailContactPickerView.h; sourceTree = "<group>"; };
+		842D7BBE18AF61130002B4CF /* THMailContactPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THMailContactPickerView.m; sourceTree = "<group>"; };
+		842D7BC018AF671E0002B4CF /* THMailContactBubble.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THMailContactBubble.h; sourceTree = "<group>"; };
+		842D7BC118AF671E0002B4CF /* THMailContactBubble.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THMailContactBubble.m; sourceTree = "<group>"; };
 		84F796461670C79500A8965D /* THBubbleColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THBubbleColor.h; sourceTree = "<group>"; };
 		84F796471670C79500A8965D /* THBubbleColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THBubbleColor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -108,6 +114,10 @@
 				29A71C10164482BB005286F1 /* THContactPickerViewController.xib */,
 				84F796461670C79500A8965D /* THBubbleColor.h */,
 				84F796471670C79500A8965D /* THBubbleColor.m */,
+				842D7BBD18AF61130002B4CF /* THMailContactPickerView.h */,
+				842D7BBE18AF61130002B4CF /* THMailContactPickerView.m */,
+				842D7BC018AF671E0002B4CF /* THMailContactBubble.h */,
+				842D7BC118AF671E0002B4CF /* THMailContactBubble.m */,
 			);
 			path = ContactPicker;
 			sourceTree = "<group>";
@@ -196,8 +206,10 @@
 				29A71BF816448250005286F1 /* AppDelegate.m in Sources */,
 				29A71C11164482BB005286F1 /* THContactPickerViewController.m in Sources */,
 				29A71C151644834B005286F1 /* THContactPickerView.m in Sources */,
+				842D7BBF18AF61130002B4CF /* THMailContactPickerView.m in Sources */,
 				29A71C1816448473005286F1 /* THContactBubble.m in Sources */,
 				84F796481670C79500A8965D /* THBubbleColor.m in Sources */,
+				842D7BC218AF671E0002B4CF /* THMailContactBubble.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

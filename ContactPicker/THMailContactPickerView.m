@@ -15,8 +15,16 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        
     }
     return self;
+}
+
+#pragma mark -
+#pragma mark Override Methods
+
+- (void)layoutSubviews{
+    [super layoutSubviews];
 }
 
 /*
