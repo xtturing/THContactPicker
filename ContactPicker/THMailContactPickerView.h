@@ -11,6 +11,12 @@
 #import "THContactPickerView.h"
 #import "THMailContactBubble.h"
 
+//定义了收件人，抄送或密送的联系人类型
+typedef NS_ENUM(NSInteger, MailContactType) {
+    MailRecipient = 0,
+    MailCC,
+    MailBCC,
+};
 
 @class THMailContactPickerView;
 
@@ -19,22 +25,26 @@
 - (void)mailContactPickerTextViewDidChange:(NSString *)textViewText;
 - (void)mailContactPickerDidRemoveContact:(id)contact;
 - (void)mailContactPickerDidResize:(THMailContactPickerView *)contactPickerView;
+- (void)mailContactPickerWillAddContact;//显示添加联系人按钮
+- (void)mailContactPickerShouldAddContact;//可以显示添加联系人
 
 @end
 
-@interface THMailContactPickerView : UIView<UITextViewDelegate, THContactBubbleDelegate, UIScrollViewDelegate>
+@interface THMailContactPickerView : UIView<UITextViewDelegate, THMailContactBubbleDelegate, UIScrollViewDelegate>
 
 @property (nonatomic, strong) THMailContactBubble *selectedContactBubble;
 @property (nonatomic, assign) IBOutlet id <THMailContactPickerDelegate> delegate;
 @property (nonatomic, assign) BOOL limitToOne;
 @property (nonatomic, assign) CGFloat viewPadding;
+@property (nonatomic, strong) UIFont *font;
+@property (nonatomic, assign) MailContactType contactType;//联系人类型
 
 - (void)addContact:(id)contact withName:(NSString *)name;
 - (void)removeContact:(id)contact;
 - (void)removeAllContacts;
 - (void)setTitleString:(NSString *)titleString;//输入框的标题
-- (void)disableDropShadow;
+- (void)disableAddButton;
 - (void)resignKeyboard;
-
+- (void)selectTextView;
 
 @end

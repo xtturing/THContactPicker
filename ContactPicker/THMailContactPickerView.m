@@ -22,6 +22,7 @@
 @property (nonatomic, strong) NSMutableDictionary *contacts;
 @property (nonatomic, strong) NSMutableArray *contactKeys; // an ordered set of the keys placed in the contacts dictionary
 @property (nonatomic, strong) UILabel *titleLabel;//输入框的标题
+@property (nonatomic, strong) UIButton *addButton;//添加按钮
 @property (nonatomic, assign) CGFloat lineHeight;
 @property (nonatomic, strong) UITextView *textView;
 
@@ -49,7 +50,7 @@
     self.contactKeys = [NSMutableArray array];
     
     // Create a contact bubble to determine the height of a line
-    THContactBubble *contactBubble = [[THContactBubble alloc] initWithName:@"Sample"];
+    THMailContactBubble *contactBubble = [[THMailContactBubble alloc] initWithName:@"Sample"];
     self.lineHeight = contactBubble.frame.size.height + 2 * kVerticalPadding;
     
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
@@ -68,15 +69,9 @@
     self.textView.scrollsToTop = NO;
     self.textView.clipsToBounds = NO;
     self.textView.autocorrectionType = UITextAutocorrectionTypeNo;
-    [self.textView becomeFirstResponder];
     
     // Add shadow to bottom border
     self.backgroundColor = [UIColor whiteColor];
-    CALayer *layer = [self layer];
-    [layer setShadowColor:[[UIColor colorWithRed:225.0/255.0 green:226.0/255.0 blue:228.0/255.0 alpha:1] CGColor]];
-    [layer setShadowOffset:CGSizeMake(0, 2)];
-    [layer setShadowOpacity:1];
-    [layer setShadowRadius:1.0f];
     
     // Add titleLabel
     self.titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -85,6 +80,13 @@
     self.titleLabel.textColor = [UIColor grayColor];
     self.titleLabel.backgroundColor = [UIColor clearColor];
     [self.scrollView addSubview:self.titleLabel];
+    
+    //add button
+    self.addButton=[UIButton buttonWithType:UIButtonTypeContactAdd];
+    self.addButton.frame=CGRectMake(self.frame.size.width-24,kVerticalPadding + self.viewPadding, 20,20);
+    [self.addButton addTarget:self action:@selector(addContact:) forControlEvents:UIControlEventTouchUpInside];
+    self.addButton.hidden=YES;
+    [self addSubview:self.addButton];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture)];
     tapGesture.numberOfTapsRequired = 1;
@@ -133,12 +135,7 @@
     CGRect textViewFrame = CGRectMake(0, 0, self.textView.frame.size.width, self.lineHeight/* - 2 * kVerticalPadding*/);
     // Check if we can add the text field on the same line as the last contact bubble
     if (self.frame.size.width - frameOfLastBubble.origin.x - frameOfLastBubble.size.width - minWidth >= 0){ // add to the same line
-        if(lineCount==0){//如果是第一行，需要加上标题的宽度
-           textViewFrame.origin.x = frameOfLastBubble.origin.x + frameOfLastBubble.size.width + kHorizontalPadding+self.titleLabel.frame.size.width+kTitlePadding;//需要加上标题的宽度
-        }else{
-           textViewFrame.origin.x = frameOfLastBubble.origin.x + frameOfLastBubble.size.width + kHorizontalPadding;
-        }
-        
+        textViewFrame.origin.x = frameOfLastBubble.origin.x + frameOfLastBubble.size.width + kHorizontalPadding;
         textViewFrame.size.width = self.frame.size.width - textViewFrame.origin.x;
     } else { // place text view on the next line
         lineCount++;
@@ -191,12 +188,23 @@
 
 #pragma mark - Public functions
 
-- (void)disableDropShadow {
-    CALayer *layer = [self layer];
-    [layer setShadowRadius:0];
-    [layer setShadowOpacity:0];
+- (void)disableAddButton {
+    if(!self.addButton.hidden){
+        self.addButton.hidden=YES;
+    }
 }
-
+- (void)setFont:(UIFont *)font {
+    _font = font;
+    // Create a contact bubble to determine the height of a line
+    THMailContactBubble *contactBubble = [[THMailContactBubble alloc] initWithName:@"Sample"];
+    [contactBubble setFont:font];
+    self.lineHeight = contactBubble.frame.size.height + 2 * kVerticalPadding;
+    
+    self.textView.font = font;
+    [self.textView sizeToFit];
+    
+    self.titleLabel.font = font;
+}
 
 - (void)addContact:(id)contact withName:(NSString *)name {
     id contactKey = [NSValue valueWithNonretainedObject:contact];
@@ -266,7 +274,7 @@
 - (void)setTitleString:(NSString *)titleString {
     self.titleLabel.text =[NSString stringWithFormat:@"%@:",titleString];
     //titleLabel自适应标题的宽度
-    CGSize size = CGSizeMake(320,self.lineHeight);
+    CGSize size = CGSizeMake(300,self.lineHeight);
     CGSize labelsize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:size lineBreakMode:UILineBreakModeWordWrap];
     self.titleLabel.frame = CGRectMake(kTitlePadding,kVerticalPadding + self.viewPadding, labelsize.width, labelsize.height);
     [self layoutView];
@@ -274,6 +282,7 @@
 
 - (void)resignKeyboard {
     [self.textView resignFirstResponder];
+    
 }
 
 - (void)setViewPadding:(CGFloat)viewPadding {
@@ -281,6 +290,10 @@
     
     [self layoutView];
 }
+
+
+
+#pragma mark - Private functions
 
 - (void)setBubbleColor:(THBubbleColor *)color selectedColor:(THBubbleColor *)selectedColor {
     self.bubbleColor = color;
@@ -300,8 +313,6 @@
         }
     }
 }
-
-#pragma mark - Private functions
 
 - (void)scrollToBottomWithAnimation:(BOOL)animated {
     if (animated){
@@ -360,9 +371,22 @@
     return nil;
 }
 
+- (void) addContact:(id)sender{
+    if([self.delegate respondsToSelector:@selector(mailContactPickerShouldAddContact)]){
+        [self.delegate mailContactPickerShouldAddContact];
+    }
+}
 
 #pragma mark - UITextViewDelegate
-
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView{
+    if([self.delegate respondsToSelector:@selector(mailContactPickerWillAddContact)]){
+        [self.delegate mailContactPickerWillAddContact];
+    }
+    if(self.addButton.hidden){
+        self.addButton.hidden=NO;
+    }
+    return YES;
+}
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
 {
     self.textView.hidden = NO;
@@ -390,7 +414,7 @@
 
 #pragma mark - THMailContactBubbleDelegate Functions
 
-- (void)contactBubbleWasSelected:(THMailContactBubble *)contactBubble {
+- (void)mailContactBubbleWasSelected:(THMailContactBubble *)contactBubble {
     if (self.selectedContactBubble != nil){
         [self.selectedContactBubble unSelect];
     }
@@ -401,7 +425,7 @@
     self.textView.hidden = YES;
 }
 
-- (void)contactBubbleWasUnSelected:(THMailContactBubble *)contactBubble {
+- (void)mailContactBubbleWasUnSelected:(THMailContactBubble *)contactBubble {
     if (self.selectedContactBubble != nil){
         
     }
@@ -410,7 +434,7 @@
     self.textView.hidden = NO;
 }
 
-- (void)contactBubbleShouldBeRemoved:(THMailContactBubble *)contactBubble {
+- (void)mailContactBubbleShouldBeRemoved:(THMailContactBubble *)contactBubble {
     [self removeContactBubble:contactBubble];
 }
 

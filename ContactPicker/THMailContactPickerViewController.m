@@ -7,10 +7,18 @@
 //
 
 #import "THMailContactPickerViewController.h"
+#import "THMailContactViewController.h"
 
 #define kKeyboardHeight 216.0
 
 @interface THMailContactPickerViewController ()
+
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) THMailContactPickerView *recipientPickerView;
+@property (nonatomic, strong) THMailContactPickerView *CCPickerView;
+@property (nonatomic, strong) THMailContactPickerView *BCCPickerView;
+@property (nonatomic, strong) THMailContactViewController *contactViewController;
+@property (nonatomic, assign) MailContactType currentContactType;
 
 @end
 
@@ -22,9 +30,7 @@
     if (self) {
         // Custom initialization
         self.title = @"新邮件";
-        self.contacts = [NSArray arrayWithObjects:@"Tristan Himmelman", @"John Himmelman", @"Nicole Robertson", @"Nicholas Barss", @"Andrew Sarasin", @"Mike Slon", @"Eric Salpeter", nil];
         self.selectedContacts = [NSMutableArray array];
-        self.filteredContacts = self.contacts;
     }
     return self;
 }
@@ -41,17 +47,12 @@
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain target:self action:@selector(cancelMail:)];
     self.navigationItem.leftBarButtonItem = cancelButton;
     
-    // Initialize and add Contact Picker View
-    self.contactPickerView = [[THMailContactPickerView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 80)];
-    self.contactPickerView.delegate = self;
-    [self.contactPickerView setTitleString:@"发件人"];
-    [self.view addSubview:self.contactPickerView];
     
     // Fill the rest of the view with the table view
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.contactPickerView.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.contactPickerView.frame.size.height - kKeyboardHeight) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.view insertSubview:self.tableView belowSubview:self.contactPickerView];
+    [self.view addSubview:self.tableView];
 }
 
 
@@ -62,14 +63,14 @@
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    CGFloat topOffset = 0;
-    if ([self respondsToSelector:@selector(topLayoutGuide)]){
-        topOffset = self.topLayoutGuide.length;
-    }
-    CGRect frame = self.contactPickerView.frame;
-    frame.origin.y = topOffset;
-    self.contactPickerView.frame = frame;
-    [self adjustTableViewFrame];
+//    CGFloat topOffset = 0;
+//    if ([self respondsToSelector:@selector(topLayoutGuide)]){
+//        topOffset = self.topLayoutGuide.length;
+//    }
+//    CGRect frame = self.tableView.frame;
+//    frame.origin.y = topOffset;
+//    self.tableView.frame = frame;
+//    [self adjustTableViewFrame];
 }
 
 - (void)didReceiveMemoryWarning
@@ -79,10 +80,10 @@
 }
 
 - (void)adjustTableViewFrame {
-    CGRect frame = self.tableView.frame;
-    frame.origin.y = self.contactPickerView.frame.size.height;
-    frame.size.height = self.view.frame.size.height - self.contactPickerView.frame.size.height - kKeyboardHeight;
-    self.tableView.frame = frame;
+//    CGRect frame = self.tableView.frame;
+//    frame.origin.y = self.contactPickerView.frame.size.height;
+//    frame.size.height = self.view.frame.size.height - self.contactPickerView.frame.size.height - kKeyboardHeight;
+//    self.tableView.frame = frame;
 }
 
 
@@ -103,7 +104,15 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.filteredContacts.count;
+    return 4;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(indexPath.row==3){
+        return 200;
+    }else{
+        return 44;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -113,36 +122,46 @@
     if (cell == nil){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    cell.textLabel.text = [self.filteredContacts objectAtIndex:indexPath.row];
     
-    if ([self.selectedContacts containsObject:[self.filteredContacts objectAtIndex:indexPath.row]]){
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    } else {
-        cell.accessoryType = UITableViewCellAccessoryNone;
+    if (indexPath.row==3) {
+        cell.accessoryView=nil;
+        cell.textLabel.text=@"发自我的iPhone";
+        cell.textLabel.font=[UIFont systemFontOfSize:24];
+    }else{
+        if (indexPath.row==0){
+            self.recipientPickerView = [[THMailContactPickerView alloc] initWithFrame:CGRectMake(20, 0, self.view.frame.size.width-20, 44)];
+            self.recipientPickerView.delegate = self;
+            self.recipientPickerView.font=[UIFont systemFontOfSize:14];
+            [self.recipientPickerView setTitleString:@"发件人"];
+            [self.recipientPickerView selectTextView];
+            cell.accessoryView=self.recipientPickerView;
+        }else if(indexPath.row==1){
+            self.CCPickerView = [[THMailContactPickerView alloc] initWithFrame:CGRectMake(20, 0, self.view.frame.size.width-20, 44)];
+            self.CCPickerView.delegate = self;
+            self.CCPickerView.font=[UIFont systemFontOfSize:14];
+            [self.CCPickerView setTitleString:@"抄送/密送"];
+            cell.accessoryView=self.CCPickerView;
+        }else if(indexPath.row==2){
+            self.BCCPickerView = [[THMailContactPickerView alloc] initWithFrame:CGRectMake(20, 0, self.view.frame.size.width-20, 44)];
+            self.BCCPickerView.delegate = self;
+            self.BCCPickerView.font=[UIFont systemFontOfSize:14];
+            [self.BCCPickerView setTitleString:@"主题"];
+            cell.accessoryView=self.BCCPickerView;
+        }
+        
     }
-    
+    cell.userInteractionEnabled=YES;
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
     return cell;
 }
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    cell.accessoryType=UITableViewCellAccessoryCheckmark;
     
-    NSString *user = [self.filteredContacts objectAtIndex:indexPath.row];
-    
-    if ([self.selectedContacts containsObject:user]){ // contact is already selected so remove it from ContactPickerView
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        [self.selectedContacts removeObject:user];
-        [self.contactPickerView removeContact:user];
-    } else {
-        // Contact has not been selected, add it to THContactPickerView
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        [self.selectedContacts addObject:user];
-        [self.contactPickerView addContact:user withName:user];
-    }
-    
-    self.filteredContacts = self.contacts;
     [self.tableView reloadData];
 }
 
@@ -170,12 +189,17 @@
     cell.accessoryType = UITableViewCellAccessoryNone;
 }
 
-- (void)removeAllContacts:(id)sender
-{
-    [self.contactPickerView removeAllContacts];
-    [self.selectedContacts removeAllObjects];
-    self.filteredContacts = self.contacts;
-    [self.tableView reloadData];
+- (void)mailContactPickerWillAddContact{
+    //下一个contactpicker启动前要其他关闭其他的添加按钮
+    [self.recipientPickerView disableAddButton];
+    [self.CCPickerView disableAddButton];
+    [self.BCCPickerView disableAddButton];
+}
+
+- (void)mailContactPickerShouldAddContact{
+    _contactViewController=[[THMailContactViewController alloc] init];
+    _contactViewController.selectedContacts=self.selectedContacts;
+    [self.navigationController pushViewController:_contactViewController animated:YES];
 }
 
 @end

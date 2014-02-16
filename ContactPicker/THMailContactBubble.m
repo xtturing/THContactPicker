@@ -92,7 +92,7 @@
     // Round the corners
     CALayer *viewLayer = [self layer];
     viewLayer.cornerRadius = 4;
-    viewLayer.borderWidth = 1;
+    viewLayer.borderWidth = 0;
     viewLayer.masksToBounds = YES;
 }
 
@@ -118,9 +118,9 @@
     
     [self.textView becomeFirstResponder];
     
-    //选中删除顿号
-    [self.comma removeFromSuperview];
-    
+    //选中删除隐藏顿号
+    self.comma.hidden=YES;
+    [self setNeedsDisplay];
     [self adjustSize];
 }
 
@@ -138,15 +138,20 @@
     
     [self adjustSize];
     //未选中加入顿号
-    self.comma = [[UILabel alloc] init];
-    self.comma.backgroundColor = [UIColor clearColor];
-    self.comma.text = @"、";
-    [self addSubview:self.comma];
-    [self.comma sizeToFit];
-    CGRect frame = self.comma.frame;
-    frame.origin.x = self.label.frame.origin.x+self.label.frame.size.width;
-    frame.origin.y = kVerticalPadding;
-    self.comma.frame = frame;
+    if(self.comma==nil){
+        self.comma = [[UILabel alloc] init];
+        self.comma.backgroundColor = [UIColor clearColor];
+        self.comma.text = @"、";
+        [self addSubview:self.comma];
+        [self.comma sizeToFit];
+        CGRect frame = self.comma.frame;
+        frame.origin.x = self.label.frame.origin.x+self.label.frame.size.width;
+        frame.origin.y = kVerticalPadding;
+        self.comma.frame = frame;
+    }else{
+        self.comma.hidden=NO;
+    }
+    [self setNeedsDisplay];
     
 }
 

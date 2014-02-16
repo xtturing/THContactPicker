@@ -21,6 +21,7 @@
 		29A71C151644834B005286F1 /* THContactPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 29A71C141644834B005286F1 /* THContactPickerView.m */; };
 		29A71C1816448473005286F1 /* THContactBubble.m in Sources */ = {isa = PBXBuildFile; fileRef = 29A71C1716448473005286F1 /* THContactBubble.m */; };
 		39A65F9F18B0605F007993D1 /* THMailContactPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A65F9E18B0605F007993D1 /* THMailContactPickerViewController.m */; };
+		39A65FA218B0B3DE007993D1 /* THMailContactViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 39A65FA118B0B3DE007993D1 /* THMailContactViewController.m */; };
 		6AE31FCC1644DB2C00505230 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE31FCB1644DB2C00505230 /* QuartzCore.framework */; };
 		842D7BBF18AF61130002B4CF /* THMailContactPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 842D7BBE18AF61130002B4CF /* THMailContactPickerView.m */; };
 		842D7BC218AF671E0002B4CF /* THMailContactBubble.m in Sources */ = {isa = PBXBuildFile; fileRef = 842D7BC118AF671E0002B4CF /* THMailContactBubble.m */; };
@@ -50,6 +51,8 @@
 		29A71C1716448473005286F1 /* THContactBubble.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THContactBubble.m; sourceTree = "<group>"; };
 		39A65F9D18B0605F007993D1 /* THMailContactPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THMailContactPickerViewController.h; sourceTree = "<group>"; };
 		39A65F9E18B0605F007993D1 /* THMailContactPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THMailContactPickerViewController.m; sourceTree = "<group>"; };
+		39A65FA018B0B3DE007993D1 /* THMailContactViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THMailContactViewController.h; sourceTree = "<group>"; };
+		39A65FA118B0B3DE007993D1 /* THMailContactViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THMailContactViewController.m; sourceTree = "<group>"; };
 		6AE31FCB1644DB2C00505230 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		842D7BBD18AF61130002B4CF /* THMailContactPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = THMailContactPickerView.h; sourceTree = "<group>"; };
 		842D7BBE18AF61130002B4CF /* THMailContactPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = THMailContactPickerView.m; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 				842D7BC118AF671E0002B4CF /* THMailContactBubble.m */,
 				39A65F9D18B0605F007993D1 /* THMailContactPickerViewController.h */,
 				39A65F9E18B0605F007993D1 /* THMailContactPickerViewController.m */,
+				39A65FA018B0B3DE007993D1 /* THMailContactViewController.h */,
+				39A65FA118B0B3DE007993D1 /* THMailContactViewController.m */,
 			);
 			path = ContactPicker;
 			sourceTree = "<group>";
@@ -213,6 +218,7 @@
 				29A71C151644834B005286F1 /* THContactPickerView.m in Sources */,
 				842D7BBF18AF61130002B4CF /* THMailContactPickerView.m in Sources */,
 				39A65F9F18B0605F007993D1 /* THMailContactPickerViewController.m in Sources */,
+				39A65FA218B0B3DE007993D1 /* THMailContactViewController.m in Sources */,
 				29A71C1816448473005286F1 /* THContactBubble.m in Sources */,
 				84F796481670C79500A8965D /* THBubbleColor.m in Sources */,
 				842D7BC218AF671E0002B4CF /* THMailContactBubble.m in Sources */,
