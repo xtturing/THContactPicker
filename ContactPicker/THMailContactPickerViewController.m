@@ -20,6 +20,7 @@
 @property (nonatomic, strong) THMailContactPickerView *CCPickerView;
 @property (nonatomic, strong) THMailContactPickerView *BCCPickerView;
 @property (nonatomic, strong) THMailContactViewController *contactViewController;
+@property (nonatomic, strong) THMailContactViewController *filterContactViewController;
 @property (nonatomic, assign) MailContactType currentContactType;
 
 @end
@@ -32,6 +33,8 @@
     if (self) {
         // Custom initialization
         self.title = @"新邮件";
+        self.contacts=[NSArray arrayWithObjects:@"Tristan Himmelman", @"John Himmelman", @"Nicole Robertson", @"Nicholas Barss", @"Andrew Sarasin", @"Mike Slon", @"Eric Salpeter", nil];
+        
         self.selectedRecipientContacts = [NSMutableArray array];
         self.selectedCCContacts = [NSMutableArray array];
         self.selectedBCCContacts = [NSMutableArray array];
@@ -74,13 +77,20 @@
     [self.BCCPickerView disableDropShadow];
     self.BCCPickerView.contactType=MailBCC;
     
-    _currentContactType=MailRecipient;
+    _currentContactType=MailRecipient;//当前光标在收件人
+    
     
     // Fill the rest of the view with the table view
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
+    //过滤的table
+    _filterContactViewController=[[THMailContactViewController alloc] init];
+    _filterContactViewController.delegate=self;
+    _filterContactViewController.view.frame=CGRectZero;
+    _filterContactViewController.view.hidden=YES;
+    [self.tableView addSubview:_filterContactViewController.view];
 }
 
 
@@ -90,19 +100,11 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-    if(!_shouldShowThumbCell){
-        if(_currentContactType==MailRecipient){
-            [self.recipientPickerView selectTextView];
-        }else if(_currentContactType==MailCC){
-            [self.CCPickerView selectTextView];
-        }else if(_currentContactType==MailBCC){
-            [self.BCCPickerView selectTextView];
-        }
-    }
-    
+    [super viewDidAppear:animated];
 }
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    [self selectTextView];
 }
 
 - (void)didReceiveMemoryWarning
@@ -112,10 +114,47 @@
 }
 
 - (void)adjustTableViewFrame {
+     CGRect frame = self.tableView.frame;
+    if(_currentContactType==MailRecipient){
+        frame.origin.y = 0;
+    }else if(_currentContactType==MailCC){
+        frame.origin.y = -(self.recipientPickerView.frame.size.height+4);
+    }else if(_currentContactType==MailBCC){
+        frame.origin.y = -(self.recipientPickerView.frame.size.height+4+self.CCPickerView.frame.size.height+4);
+    }
+    self.tableView.frame=frame;
     
+   
+    frame.origin.x=0;
+    if(_currentContactType==MailRecipient){
+        frame.origin.y = self.recipientPickerView.frame.size.height+4;
+    }else if(_currentContactType==MailCC){
+        frame.origin.y = self.recipientPickerView.frame.size.height+4+self.CCPickerView.frame.size.height+4;
+    }else if(_currentContactType==MailBCC){
+        frame.origin.y = self.recipientPickerView.frame.size.height+4+self.CCPickerView.frame.size.height+4+self.BCCPickerView.frame.size.height+4;
+    }
+    frame.size.height = self.view.frame.size.height - frame.origin.y - kKeyboardHeight;
+    frame.size.width=self.view.frame.size.width;
+    _filterContactViewController.view.frame = frame;
 }
 
+- (void)updateTableViewFrame{
+    CGRect frame = self.tableView.frame;
+    frame.origin.y = 0;
+    self.tableView.frame=frame;
+}
 
+- (void)selectTextView{
+    if(!_shouldShowThumbCell){
+        if(_currentContactType==MailRecipient){
+            [self.recipientPickerView selectTextView];
+        }else if(_currentContactType==MailCC){
+            [self.CCPickerView selectTextView];
+        }else if(_currentContactType==MailBCC){
+            [self.BCCPickerView selectTextView];
+        }
+    }
+}
 #pragma mark - private
 
 - (void)sendMail:(id)sender{
@@ -255,6 +294,7 @@
     }
     if(_shouldShowThumbCell){
         _shouldShowThumbCell=NO;
+        
     }
     [self.tableView reloadData];
 }
@@ -263,7 +303,23 @@
 
 - (void)mailContactPickerTextViewDidChange:(NSString *)textViewText {
     
-//    [self.tableView reloadData];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"self contains[cd] %@", textViewText];
+    self.filteredContacts = [self.contacts filteredArrayUsingPredicate:predicate];
+    if(self.filteredContacts.count>0){
+        _filterContactViewController.view.hidden=NO;
+        _filterContactViewController.contacts=self.filteredContacts;
+        if(_currentContactType==MailRecipient){
+            _filterContactViewController.selectedContacts=self.selectedRecipientContacts;
+        }else if(_currentContactType==MailCC){
+            _filterContactViewController.selectedContacts=self.selectedCCContacts;
+        }else if(_currentContactType==MailBCC){
+            _filterContactViewController.selectedContacts=self.selectedBCCContacts;
+        }
+        [_filterContactViewController.tableView reloadData];
+        [self adjustTableViewFrame];
+    }
+    
+    
 }
 
 - (void)mailContactPickerDidResize:(THContactPickerView *)contactPickerView {
@@ -314,6 +370,7 @@
     }else if(_currentContactType==MailBCC){
         _contactViewController.selectedContacts=self.selectedBCCContacts;
     }
+    _contactViewController.contacts=self.contacts;
     _contactViewController.delegate=self;
     [self.navigationController pushViewController:_contactViewController animated:YES];
 }
@@ -331,7 +388,8 @@
         [self.selectedBCCContacts addObject:contact];
         [self.BCCPickerView addContact:contact withName:(NSString *)contact];
     }
-    
+    _filterContactViewController.view.hidden=YES;
+    [self updateTableViewFrame];
 }
 
 - (void) FinishRemovedOneContactInTableView:(id)contact{

@@ -20,5 +20,5 @@
 @property (nonatomic, strong) NSMutableArray *selectedCCContacts;//选择的抄送人数组
 @property (nonatomic, strong) NSMutableArray *selectedBCCContacts;//选择的密送人数组
 @property (nonatomic, strong) NSArray *filteredContacts;
-
+@property (nonatomic, strong) NSArray *contacts;
 @end

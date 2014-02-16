@@ -20,7 +20,6 @@
     if (self) {
         // Custom initialization
         self.title = @"所有联系人";
-        self.contacts = [NSArray arrayWithObjects:@"Tristan Himmelman", @"John Himmelman", @"Nicole Robertson", @"Nicholas Barss", @"Andrew Sarasin", @"Mike Slon", @"Eric Salpeter", nil];
     }
     return self;
 }
