@@ -25,12 +25,12 @@ typedef NS_ENUM(NSInteger, MailContactType) {
 - (void)mailContactPickerTextViewDidChange:(NSString *)textViewText;
 - (void)mailContactPickerDidRemoveContact:(id)contact;
 - (void)mailContactPickerDidResize:(THMailContactPickerView *)contactPickerView;
-- (void)mailContactPickerWillAddContact;//显示添加联系人按钮
+- (void)mailContactPickerWillAddContact:(MailContactType )currentType;//显示添加联系人按钮
 - (void)mailContactPickerShouldAddContact;//可以显示添加联系人
 
 @end
 
-@interface THMailContactPickerView : UIView<UITextViewDelegate, THMailContactBubbleDelegate, UIScrollViewDelegate>
+@interface THMailContactPickerView : UIView<UITextViewDelegate, THMailContactBubbleDelegate, UIScrollViewDelegate,UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) THMailContactBubble *selectedContactBubble;
 @property (nonatomic, assign) IBOutlet id <THMailContactPickerDelegate> delegate;
@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, MailContactType) {
 - (void)removeAllContacts;
 - (void)setTitleString:(NSString *)titleString;//输入框的标题
 - (void)disableAddButton;
+- (void)disableDropShadow;
 - (void)resignKeyboard;
 - (void)selectTextView;
 

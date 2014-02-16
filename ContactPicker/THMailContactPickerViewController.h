@@ -12,11 +12,13 @@
  */
 #import <UIKit/UIKit.h>
 #import "THMailContactPickerView.h"
+#import "THMailContactViewController.h"
 
-@interface THMailContactPickerViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, THMailContactPickerDelegate>
+@interface THMailContactPickerViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, THMailContactPickerDelegate,THMailContactDelegate,UITextFieldDelegate>
 
-@property (nonatomic, strong) NSArray *contacts;
-@property (nonatomic, strong) NSMutableArray *selectedContacts;
+@property (nonatomic, strong) NSMutableArray *selectedRecipientContacts;//选择的收件人数组
+@property (nonatomic, strong) NSMutableArray *selectedCCContacts;//选择的抄送人数组
+@property (nonatomic, strong) NSMutableArray *selectedBCCContacts;//选择的密送人数组
 @property (nonatomic, strong) NSArray *filteredContacts;
 
 @end

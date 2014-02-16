@@ -21,7 +21,6 @@
         // Custom initialization
         self.title = @"所有联系人";
         self.contacts = [NSArray arrayWithObjects:@"Tristan Himmelman", @"John Himmelman", @"Nicole Robertson", @"Nicholas Barss", @"Andrew Sarasin", @"Mike Slon", @"Eric Salpeter", nil];
-        self.filteredContacts = self.contacts;
     }
     return self;
 }
@@ -51,7 +50,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.filteredContacts.count;
+    return self.contacts.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -61,9 +60,9 @@
     if (cell == nil){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    cell.textLabel.text = [self.filteredContacts objectAtIndex:indexPath.row];
+    cell.textLabel.text = [self.contacts objectAtIndex:indexPath.row];
     
-    if ([self.selectedContacts containsObject:[self.filteredContacts objectAtIndex:indexPath.row]]){
+    if ([self.selectedContacts containsObject:[self.contacts objectAtIndex:indexPath.row]]){
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -77,19 +76,23 @@
     
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
-    NSString *user = [self.filteredContacts objectAtIndex:indexPath.row];
+    NSString *user = [self.contacts objectAtIndex:indexPath.row];
     
     if ([self.selectedContacts containsObject:user]){ // contact is already selected so remove it from ContactPickerView
         cell.accessoryType = UITableViewCellAccessoryNone;
-        [self.selectedContacts removeObject:user];
+        if([self.delegate respondsToSelector:@selector(FinishRemovedOneContactInTableView:)]){
+            [self.delegate FinishRemovedOneContactInTableView:user];
+        }
     } else {
         // Contact has not been selected, add it to THContactPickerView
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        [self.selectedContacts addObject:user];
+        if([self.delegate respondsToSelector:@selector(FinishSelectedOneContactInTableView:)]){
+            [self.delegate FinishSelectedOneContactInTableView:user];
+        }
     }
     
-    self.filteredContacts = self.contacts;
     [self.tableView reloadData];
+    
     [self.navigationController popViewControllerAnimated:YES];
 }
 

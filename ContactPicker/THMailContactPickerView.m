@@ -72,6 +72,11 @@
     
     // Add shadow to bottom border
     self.backgroundColor = [UIColor whiteColor];
+    CALayer *layer = [self layer];
+    [layer setShadowColor:[[UIColor colorWithRed:225.0/255.0 green:226.0/255.0 blue:228.0/255.0 alpha:1] CGColor]];
+    [layer setShadowOffset:CGSizeMake(0, 2)];
+    [layer setShadowOpacity:1];
+    [layer setShadowRadius:1.0f];
     
     // Add titleLabel
     self.titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -131,7 +136,7 @@
     }
     
     // Now add a textView after the comment bubbles
-    CGFloat minWidth = kTextViewMinWidth + 2 * kHorizontalPadding;
+    CGFloat minWidth = kTextViewMinWidth + 2 * kHorizontalPadding;//去掉添加按钮的宽度
     CGRect textViewFrame = CGRectMake(0, 0, self.textView.frame.size.width, self.lineHeight/* - 2 * kVerticalPadding*/);
     // Check if we can add the text field on the same line as the last contact bubble
     if (self.frame.size.width - frameOfLastBubble.origin.x - frameOfLastBubble.size.width - minWidth >= 0){ // add to the same line
@@ -187,6 +192,12 @@
 }
 
 #pragma mark - Public functions
+
+- (void)disableDropShadow {
+    CALayer *layer = [self layer];
+    [layer setShadowRadius:0];
+    [layer setShadowOpacity:0];
+}
 
 - (void)disableAddButton {
     if(!self.addButton.hidden){
@@ -379,10 +390,11 @@
 
 #pragma mark - UITextViewDelegate
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView{
-    if([self.delegate respondsToSelector:@selector(mailContactPickerWillAddContact)]){
-        [self.delegate mailContactPickerWillAddContact];
-    }
+    
     if(self.addButton.hidden){
+        if([self.delegate respondsToSelector:@selector(mailContactPickerWillAddContact:)]){
+            [self.delegate mailContactPickerWillAddContact:self.contactType];
+        }
         self.addButton.hidden=NO;
     }
     return YES;
