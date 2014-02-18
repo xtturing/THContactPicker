@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, MailContactType) {
 - (void)mailContactPickerDidResize:(THMailContactPickerView *)contactPickerView;
 - (void)mailContactPickerWillAddContact:(MailContactType )currentType;//显示添加联系人按钮
 - (void)mailContactPickerShouldAddContact;//可以显示添加联系人
+- (void)mailContactBubbleDoSelect:(MailContactType )currentType;//当前做了token选择
 
 @end
 

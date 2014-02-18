@@ -18,7 +18,7 @@
     BOOL _shouldSelectTextView;
 }
 
-@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIView *tokenView;
 @property (nonatomic, strong) NSMutableDictionary *contacts;
 @property (nonatomic, strong) NSMutableArray *contactKeys; // an ordered set of the keys placed in the contacts dictionary
 @property (nonatomic, strong) UILabel *titleLabel;//输入框的标题
@@ -53,10 +53,8 @@
     THMailContactBubble *contactBubble = [[THMailContactBubble alloc] initWithName:@"Sample"];
     self.lineHeight = contactBubble.frame.size.height + 2 * kVerticalPadding;
     
-    self.scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
-    self.scrollView.scrollsToTop = NO;
-    self.scrollView.delegate = self;
-    [self addSubview:self.scrollView];
+    self.tokenView = [[UIView alloc] initWithFrame:self.bounds];
+    [self addSubview:self.tokenView];
     
     // Create TextView
     // It would make more sense to use a UITextField (because it doesnt wrap text), however, there is no easy way to detect the "delete" key press using a UITextField when there is no string in the field
@@ -84,7 +82,7 @@
     self.titleLabel.font = contactBubble.label.font;
     self.titleLabel.textColor = [UIColor grayColor];
     self.titleLabel.backgroundColor = [UIColor clearColor];
-    [self.scrollView addSubview:self.titleLabel];
+    [self.tokenView addSubview:self.titleLabel];
     
     //add button
     self.addButton=[UIButton buttonWithType:UIButtonTypeContactAdd];
@@ -112,7 +110,7 @@
         CGRect bubbleFrame = contactBubble.frame;
         
         if (CGRectIsNull(frameOfLastBubble)){ // first line
-            bubbleFrame.origin.x = kHorizontalPadding+self.titleLabel.frame.size.width+kTitlePadding;//需要加上标题的宽度
+            bubbleFrame.origin.x = kHorizontalPadding+self.titleLabel.frame.size.width+kTitlePadding+24;//需要加上标题的宽度
             bubbleFrame.origin.y = kVerticalPadding + self.viewPadding;
         } else {
             // Check if contact bubble will fit on the current line
@@ -131,7 +129,7 @@
         contactBubble.frame = bubbleFrame;
         // Add contact bubble if it hasn't been added
         if (contactBubble.superview == nil){
-            [self.scrollView addSubview:contactBubble];
+            [self.tokenView addSubview:contactBubble];
         }
     }
     
@@ -158,7 +156,7 @@
     
     // Add text view if it hasn't been added
     if (self.textView.superview == nil){
-        [self.scrollView addSubview:self.textView];
+        [self.tokenView addSubview:self.textView];
     }
     
     // Hide the text view if we are limiting number of selected contacts to 1 and a contact has already been added
@@ -169,12 +167,11 @@
     
     // Adjust scroll view content size
     CGRect frame = self.bounds;
-    CGFloat maxFrameHeight = 2 * self.lineHeight + 2 * self.viewPadding; // limit frame to two lines of content
+//    CGFloat maxFrameHeight = 2 * self.lineHeight + 2 * self.viewPadding; // limit frame to two lines of content
     CGFloat newHeight = (lineCount + 1) * self.lineHeight + 2 * self.viewPadding;
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width, newHeight);
-    
+    self.tokenView.frame=CGRectMake(self.tokenView.frame.origin.x, self.tokenView.frame.origin.y, self.tokenView.frame.size.width,newHeight);
     // Adjust frame of view if necessary
-    newHeight = (newHeight > maxFrameHeight) ? maxFrameHeight : newHeight;
+//    newHeight = (newHeight > maxFrameHeight) ? maxFrameHeight : newHeight;
     if (self.frame.size.height != newHeight){
         // Adjust self height
         CGRect selfFrame = self.frame;
@@ -183,7 +180,7 @@
         
         // Adjust scroll view height
         frame.size.height = newHeight;
-        self.scrollView.frame = frame;
+        self.tokenView.frame = frame;
         
         if ([self.delegate respondsToSelector:@selector(mailContactPickerDidResize:)]){
             [self.delegate mailContactPickerDidResize:self];
@@ -236,7 +233,6 @@
     
     // scroll to bottom
     _shouldSelectTextView = YES;
-    [self scrollToBottomWithAnimation:YES];
     // after scroll animation [self selectTextView] will be called
 }
 
@@ -278,8 +274,6 @@
     [self.textView becomeFirstResponder];
     self.textView.hidden = NO;
     self.textView.text = @"";
-    
-    [self scrollToBottomWithAnimation:NO];
 }
 
 - (void)setTitleString:(NSString *)titleString {
@@ -325,19 +319,6 @@
     }
 }
 
-- (void)scrollToBottomWithAnimation:(BOOL)animated {
-    if (animated){
-        CGSize size = self.scrollView.contentSize;
-        CGRect frame = CGRectMake(0, size.height - self.scrollView.frame.size.height, size.width, self.scrollView.frame.size.height);
-        
-        [self.scrollView scrollRectToVisible:frame animated:animated];
-    } else {
-        // this block is here because scrollRectToVisible with animated NO causes crashes on iOS 5 when the user tries to delete many contacts really quickly
-        CGPoint offset = self.scrollView.contentOffset;
-        offset.y = self.scrollView.contentSize.height - self.scrollView.frame.size.height;
-        self.scrollView.contentOffset = offset;
-    }
-}
 
 - (void)removeContactBubble:(THMailContactBubble *)contactBubble {
     id contact = [self contactForContactBubble:contactBubble];
@@ -367,8 +348,6 @@
     [self.textView becomeFirstResponder];
     self.textView.hidden = NO;
     self.textView.text = @"";
-    
-    [self scrollToBottomWithAnimation:NO];
 }
 
 - (id)contactForContactBubble:(THMailContactBubble *)contactBubble {
@@ -435,6 +414,9 @@
     [self.textView resignFirstResponder];
     self.textView.text = @"";
     self.textView.hidden = YES;
+    if([self.delegate respondsToSelector:@selector(mailContactBubbleDoSelect:)]){
+        [self.delegate mailContactBubbleDoSelect:_contactType];
+    }
 }
 
 - (void)mailContactBubbleWasUnSelected:(THMailContactBubble *)contactBubble {
@@ -456,7 +438,6 @@
     if (self.limitToOne && self.contactKeys.count == 1){
         return;
     }
-    [self scrollToBottomWithAnimation:YES];
     
     // Show textField
     self.textView.hidden = NO;

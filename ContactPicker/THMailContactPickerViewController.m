@@ -7,9 +7,11 @@
 //
 
 #import "THMailContactPickerViewController.h"
+#import "mailContactCell.h"
 
-
-#define kKeyboardHeight 216.0
+#define kKeyboardHeight          216.0
+#define kTableCellheight         44
+#define kTableCellDetailHeight   500
 
 @interface THMailContactPickerViewController (){
     BOOL _shouldShowThumbCell;
@@ -105,6 +107,7 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     [self selectTextView];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -121,6 +124,8 @@
         frame.origin.y = -(self.recipientPickerView.frame.size.height+4);
     }else if(_currentContactType==MailBCC){
         frame.origin.y = -(self.recipientPickerView.frame.size.height+4+self.CCPickerView.frame.size.height+4);
+    }else{
+        frame.origin.y = 0;
     }
     self.tableView.frame=frame;
     
@@ -128,12 +133,15 @@
     frame.origin.x=0;
     if(_currentContactType==MailRecipient){
         frame.origin.y = self.recipientPickerView.frame.size.height+4;
+        frame.size.height = self.view.frame.size.height - self.recipientPickerView.frame.size.height+4 - kKeyboardHeight;
     }else if(_currentContactType==MailCC){
         frame.origin.y = self.recipientPickerView.frame.size.height+4+self.CCPickerView.frame.size.height+4;
+        frame.size.height = self.view.frame.size.height - self.CCPickerView.frame.size.height+4 - kKeyboardHeight;
     }else if(_currentContactType==MailBCC){
         frame.origin.y = self.recipientPickerView.frame.size.height+4+self.CCPickerView.frame.size.height+4+self.BCCPickerView.frame.size.height+4;
+        frame.size.height = self.view.frame.size.height - self.BCCPickerView.frame.size.height+4 - kKeyboardHeight;
     }
-    frame.size.height = self.view.frame.size.height - frame.origin.y - kKeyboardHeight;
+    
     frame.size.width=self.view.frame.size.width;
     _filterContactViewController.view.frame = frame;
 }
@@ -178,36 +186,36 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if(indexPath.row==0){
         if(_shouldShowThumbCell){
-            return 44;
+            return kTableCellheight;
         }else{
             return self.recipientPickerView.frame.size.height+4;
         }
         
     }else if(indexPath.row==1){
         if(_shouldShowThumbCell){
-            return 44;
+            return kTableCellheight;
         }else{
             return self.CCPickerView.frame.size.height+4;
         }
     }else if (indexPath.row==2){
         if(_shouldShowThumbCell){
-            return 44;
+            return kTableCellheight;
         }else{
             return self.BCCPickerView.frame.size.height+4;
         }        
     }else if (indexPath.row==3){
-        return 44;
+        return kTableCellheight;
     }else{
-        return 200;
+        return kTableCellDetailHeight;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *cellIdentifier = @"ContactCell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    mailContactCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
+        cell = [[mailContactCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellIdentifier];
     }
     
     if (indexPath.row==4) {
@@ -231,6 +239,7 @@
                     cell.textLabel.font=[UIFont systemFontOfSize:14];
                     if (self.selectedRecipientContacts.count==1) {
                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@",[self.selectedRecipientContacts objectAtIndex:0]];
+                        cell.detailTextLabel.textAlignment=UITextAlignmentLeft;
                     }else{
                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%d位...",[self.selectedRecipientContacts objectAtIndex:0],([self.selectedRecipientContacts count]-1)];
                     }
@@ -318,7 +327,7 @@
         [_filterContactViewController.tableView reloadData];
         [self adjustTableViewFrame];
     }
-    
+    [self selectTextView];
     
 }
 
@@ -357,7 +366,18 @@
     [self.recipientPickerView disableAddButton];
     [self.CCPickerView disableAddButton];
     [self.BCCPickerView disableAddButton];
+    //取消所有token状态
+    if(self.recipientPickerView.selectedContactBubble!=nil){
+        [self.recipientPickerView.selectedContactBubble unSelect];
+    }
+    if(self.CCPickerView.selectedContactBubble!=nil){
+        [self.CCPickerView.selectedContactBubble unSelect];
+    }
+    if(self.BCCPickerView.selectedContactBubble!=nil){
+        [self.BCCPickerView.selectedContactBubble unSelect];
+    }
     _currentContactType=currentType;
+    
      _shouldShowThumbCell=NO;
 }
 
@@ -373,6 +393,34 @@
     _contactViewController.contacts=self.contacts;
     _contactViewController.delegate=self;
     [self.navigationController pushViewController:_contactViewController animated:YES];
+}
+//当前做了token选择那么就要关闭其他的token选择
+- (void)mailContactBubbleDoSelect:(MailContactType )currentType{
+    if(currentType==MailRecipient){
+        if(self.CCPickerView.selectedContactBubble!=nil){
+            [self.CCPickerView.selectedContactBubble unSelect];
+        }
+        if(self.BCCPickerView.selectedContactBubble!=nil){
+            [self.BCCPickerView.selectedContactBubble unSelect];
+        }
+    }else if(currentType==MailCC){
+        if(self.recipientPickerView.selectedContactBubble!=nil){
+            [self.recipientPickerView.selectedContactBubble unSelect];
+        }
+        
+        if(self.BCCPickerView.selectedContactBubble!=nil){
+            [self.BCCPickerView.selectedContactBubble unSelect];
+        }
+        
+    }else if(currentType==MailBCC){
+        if(self.recipientPickerView.selectedContactBubble!=nil){
+             [self.recipientPickerView.selectedContactBubble unSelect];
+        }
+        if(self.CCPickerView.selectedContactBubble!=nil){
+            [self.CCPickerView.selectedContactBubble unSelect];
+        }
+        
+    }
 }
 
 #pragma mark - THMailContactDelegate
