@@ -1,6 +1,5 @@
 THContactPicker
 ===============
 
-An iOS view used for selecting multiple contacts. This was built to mimic the selecting contact functionality in the Apple Mail app
-
-![Screenshot](https://raw.github.com/tristanhimmelman/THContactPicker/master/screenshot.png)
+ios系统自带的邮件app写邮件，可以多选联系人
+![image](screenshot.png "github")
