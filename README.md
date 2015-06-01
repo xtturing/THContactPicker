@@ -1,5 +1,5 @@
 THContactPicker
 ===============
 
-ios系统自带的邮件app写邮件，可以多选联系人
+THContactPicker is an iOS view used for selecting contacts. It is built to mimic the contact selecting functionality in the iOS Mail app. It also supports customization for different styling requirements.
 ![image](screenshot.png "github")
