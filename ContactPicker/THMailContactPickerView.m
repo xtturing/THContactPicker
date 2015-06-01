@@ -281,7 +281,7 @@
     self.titleLabel.text =[NSString stringWithFormat:@"%@:",titleString];
     //titleLabel自适应标题的宽度
     CGSize size = CGSizeMake(300,self.lineHeight);
-    CGSize labelsize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:size lineBreakMode:UILineBreakModeWordWrap];
+    CGSize labelsize = [self.titleLabel.text sizeWithFont:self.titleLabel.font constrainedToSize:size lineBreakMode:NSLineBreakByWordWrapping];
     self.titleLabel.frame = CGRectMake(kTitlePadding,kVerticalPadding + self.viewPadding, labelsize.width, labelsize.height);
     [self layoutView];
 }
