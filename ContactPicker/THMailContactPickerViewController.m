@@ -269,7 +269,7 @@
                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@",[self.selectedRecipientContacts objectAtIndex:0]];
                         cell.detailTextLabel.textAlignment=UITextAlignmentLeft;
                     }else{
-                       cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%lu位...",[self.selectedRecipientContacts objectAtIndex:0],([self.selectedRecipientContacts count]-1)];
+                       cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%ld位...",[self.selectedRecipientContacts objectAtIndex:0],(long)([self.selectedRecipientContacts count]-1)];
                     }
                     cell.detailTextLabel.textColor=[UIColor colorWithRed:24.0/255.0 green:134.0/255.0 blue:242.0/255.0 alpha:1.0];
                     cell.detailTextLabel.font=[UIFont systemFontOfSize:14];
@@ -283,7 +283,7 @@
                     if (self.selectedCCContacts.count==1) {
                         cell.detailTextLabel.text=[NSString stringWithFormat:@"%@",[self.selectedCCContacts objectAtIndex:0]];
                     }else{
-                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%lu位...",[self.selectedCCContacts objectAtIndex:0],([self.selectedCCContacts count]-1)];
+                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%ld位...",[self.selectedCCContacts objectAtIndex:0],(long)([self.selectedCCContacts count]-1)];
                     }
                     cell.detailTextLabel.textColor=[UIColor colorWithRed:24.0/255.0 green:134.0/255.0 blue:242.0/255.0 alpha:1.0];
                     cell.detailTextLabel.font=[UIFont systemFontOfSize:14];
@@ -298,7 +298,7 @@
                     if (self.selectedBCCContacts.count==1) {
                         cell.detailTextLabel.text=[NSString stringWithFormat:@"%@",[self.selectedBCCContacts objectAtIndex:0]];
                     }else{
-                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%lu位...",[self.selectedBCCContacts objectAtIndex:0],([self.selectedBCCContacts count]-1)];
+                        cell.detailTextLabel.text=[NSString stringWithFormat:@"%@，及其他%ld位...",[self.selectedBCCContacts objectAtIndex:0],(long)([self.selectedBCCContacts count]-1)];
                     }
                     cell.detailTextLabel.textColor=[UIColor colorWithRed:24.0/255.0 green:134.0/255.0 blue:242.0/255.0 alpha:1.0];
                     cell.detailTextLabel.font=[UIFont systemFontOfSize:14];
